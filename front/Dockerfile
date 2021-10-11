@@ -6,6 +6,6 @@ WORKDIR /code
 COPY package.json .
 COPY yarn.lock .
 
-RUN yarn install --silent
+RUN yarn --silent
 
 COPY . .
