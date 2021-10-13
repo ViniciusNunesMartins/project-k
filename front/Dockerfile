@@ -6,6 +6,6 @@ WORKDIR /code
 COPY package.json .
 COPY yarn.lock .
 
-RUN yarn
+RUN yarn --cwd ./front
 
 COPY . .
