@@ -1,3 +1,7 @@
 from django.contrib import admin
+from .models import Dashboard, Tasks
 
-# Register your models here.
+
+@admin.register(Dashboard, Tasks)
+class KanbanAdmin(admin.ModelAdmin):
+    pass
