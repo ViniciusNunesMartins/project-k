@@ -22,8 +22,7 @@ class Tasks(TitleDescriptionModel, TimeStampedModel, models.Model):
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="creator")
     responsible = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="responsible")
     deadline = models.DateField(default=timezone.now)
-    status = models.CharField(max_length=5, status_choices)
+    status = models.CharField(max_length=5, choices=status_choices)
 
     def __str__(self):
-        return f"{self.title} - {self.status}: {self.deadline}" 
-    
+        return f"{self.title} - {self.status}: {self.deadline}"
