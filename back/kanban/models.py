@@ -12,7 +12,7 @@ class Dashboard(TimeStampedModel, models.Model):
         return self.name
 
 class Tasks(TitleDescriptionModel, TimeStampedModel, models.Model):
-    status_choices =(
+    status_choices = (
         ("TO DO", "TO_DO"),
         ("DOING", "DOING"),
         ("DONE", "DONE")
