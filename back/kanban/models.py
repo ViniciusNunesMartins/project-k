@@ -12,15 +12,17 @@ class Dashboard(TimeStampedModel, models.Model):
         return self.name
 
 class Tasks(TitleDescriptionModel, TimeStampedModel, models.Model):
+    status_choices = choices=(
+        ("TO DO", "TO_DO"),
+        ("DOING", "DOING"),
+        ("DONE", "DONE")
+    )
+
     dashboard = models.ForeignKey(Dashboard, on_delete=models.CASCADE)
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="creator")
     responsible = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="responsible")
     deadline = models.DateField(default=timezone.now)
-    status = models.CharField(max_length=5, choices=(
-        ("TO DO", "TO_DO"),
-        ("DOING", "DOING"),
-        ("DONE", "DONE")
-    ))
+    status = models.CharField(max_length=5, status_choices)
 
     def __str__(self):
         return f"{self.title} - {self.status}: {self.deadline}" 
