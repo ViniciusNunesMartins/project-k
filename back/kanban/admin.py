@@ -1,7 +1,7 @@
 from django.contrib import admin
-from .models import Dashboard, Tasks
+from .models import Dashboard, Task
 
 
-@admin.register(Dashboard, Tasks)
+@admin.register(Dashboard, Task)
 class KanbanAdmin(admin.ModelAdmin):
     pass
