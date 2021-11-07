@@ -1,23 +1,75 @@
 from django.db import models
 from django_extensions.db.models import TimeStampedModel, TitleDescriptionModel
 from django.conf import settings
-from django.utils import timezone
-from .utils import status_choices
 
 
-class Dashboard(TimeStampedModel, models.Model):
-    name = models.CharField(max_length=50)
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+class Dashboard(TitleDescriptionModel, TimeStampedModel):
+    """
+    Dashboard model
+    """
+    class Meta:
+        verbose_name = "Dashboard"
+        verbose_name_plural = "Dashboards"
 
     def __str__(self):
-        return self.name
+        return self.title
 
-class Task(TitleDescriptionModel, TimeStampedModel, models.Model):
+
+class Board(TitleDescriptionModel, TimeStampedModel):
+    """
+    Board model
+    """
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     dashboard = models.ForeignKey(Dashboard, on_delete=models.CASCADE)
-    creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="creator")
-    responsible = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="responsible")
-    deadline = models.DateField(default=timezone.now)
-    status = models.CharField(max_length=5, choices=status_choices)
+
+    class Meta:
+        verbose_name = "Board"
+        verbose_name_plural = "Boards"
 
     def __str__(self):
-        return f"{self.title} - {self.status}: {self.deadline}"
+        return self.title
+
+
+class Column(TitleDescriptionModel, TimeStampedModel):
+    """
+    Column model
+    """
+    board = models.ForeignKey(Board, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = "Column"
+        verbose_name_plural = "Columns"
+
+    def __str__(self):
+        return self.title
+
+
+class Card(TitleDescriptionModel, TimeStampedModel):
+    """
+    Card model
+    """
+    column = models.ForeignKey(Column, on_delete=models.CASCADE)
+    deadline = models.DateTimeField(blank=True, null=True)
+    assignee = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, blank=True, null=True)
+
+    class Meta:
+        verbose_name = "Card"
+        verbose_name_plural = "Cards"
+    
+    def __str__(self):
+        return self.title
+
+
+class Comment(TitleDescriptionModel, TimeStampedModel):
+    """
+    Comment model
+    """
+    card = models.ForeignKey(Card, on_delete=models.CASCADE)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = "Comment"
+        verbose_name_plural = "Comments"
+
+    def __str__(self):
+        return self.title

@@ -2,8 +2,9 @@ version: "3.8"
 
 services:
   front:
+    container_name: Front
     build: ./front
-    command: yarn --cwd ./front serve
+    command: yarn --cwd ./front run dev --port 3000 --host
     volumes:
       - .:/code
     ports:
@@ -11,6 +12,7 @@ services:
     depends_on:
       - back
   back:
+    container_name: Back
     build: ./back
     command: python back/manage.py runserver 0.0.0.0:8000
     volumes:
@@ -20,6 +22,7 @@ services:
     depends_on:
       - db
   db:
+    container_name: Database
     image: postgres:13
     environment:
       - POSTGRES_USER=postgres
