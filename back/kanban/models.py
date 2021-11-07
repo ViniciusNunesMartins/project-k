@@ -3,6 +3,9 @@ from django_extensions.db.models import TimeStampedModel, TitleDescriptionModel
 from django.conf import settings
 
 
+User = settings.AUTH_USER_MODEL
+
+
 class Dashboard(TitleDescriptionModel, TimeStampedModel):
     """
     Dashboard model
@@ -19,7 +22,7 @@ class Board(TitleDescriptionModel, TimeStampedModel):
     """
     Board model
     """
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
     dashboard = models.ForeignKey(Dashboard, on_delete=models.CASCADE)
 
     class Meta:
@@ -50,7 +53,7 @@ class Card(TitleDescriptionModel, TimeStampedModel):
     """
     column = models.ForeignKey(Column, on_delete=models.CASCADE)
     deadline = models.DateTimeField(blank=True, null=True)
-    assignee = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, blank=True, null=True)
+    assignee = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
 
     class Meta:
         verbose_name = "Card"
@@ -65,7 +68,7 @@ class Comment(TitleDescriptionModel, TimeStampedModel):
     Comment model
     """
     card = models.ForeignKey(Card, on_delete=models.CASCADE)
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = "Comment"

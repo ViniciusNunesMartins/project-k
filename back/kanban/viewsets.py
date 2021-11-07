@@ -3,29 +3,29 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .models import Dashboard, Board, Card
-from .serializers import DashboardSerializer, BoardSerializer, CardSerializer, UserSerializer
+from .models import Dashboard, Board, Card, Comment
+from .serializers import DashboardSerializer, BoardSerializer, CardSerializer, CommentSerializer
+
 
 
 class DashboardViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
     queryset = Dashboard.objects.all()
     serializer_class = DashboardSerializer
-    permission_classes = (IsAuthenticated,)
     authentication_classes = (TokenAuthentication,)
-
-    def get_queryset(self):
-        return Dashboard.objects.filter(user=self.request.user)
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+    permission_classes = (IsAuthenticated,)
 
     @action(detail=True, methods=['get'])
     def boards(self, request, pk=None):
-        boards = Board.objects.filter(dashboard=pk)
+        dashboard = self.get_object()
+        boards = dashboard.boards.all()
         serializer = BoardSerializer(boards, many=True)
+        return Response(serializer.data)
+    
+    @action(detail=True, methods=['get'])
+    def cards(self, request, pk=None):
+        dashboard = self.get_object()
+        cards = dashboard.cards.all()
+        serializer = CardSerializer(cards, many=True)
         return Response(serializer.data)
 
 
@@ -69,5 +69,33 @@ class CardViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'])
     def users(self, request, pk=None):
         users = Card.objects.filter(card=pk)
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['get'])
+    def comments(self, request, pk=None):
+        comments = Comment.objects.filter(card=pk)
+        serializer = CommentSerializer(comments, many=True)
+        return Response(serializer.data)
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
+
+    def get_queryset(self):
+        return Comment.objects.filter(card=self.request.user.card.id)
+
+    def perform_create(self, serializer):
+        serializer.save(card=self.request.user.card)
+
+    @action(detail=True, methods=['get'])
+    def users(self, request, pk=None):
+        users = Comment.objects.filter(comment=pk)
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data)
